@@ -388,13 +388,18 @@ function isFactionWeakened(faction_id)
     local faction = cm:model():world():faction_by_key(faction_id)
 
     if not faction or faction:is_human() then
-        return false -- AI should not force peace on a human
+        return true -- aI should force peace on a human
     end
 
     local strength_ratio = faction:military_strength() / getEnemyStrength(faction)
     local lost_cities = faction:region_list():num_items() < faction:home_region_count()
     local recent_defeats = getFactionDefeats(faction_id) > getFactionVictories(faction_id)
     local war_weariness = getWarWeariness(faction_id)
+
+    -- send faction status to gc_scripts.lua
+    if _G.AdjustAIWarBehavior then  
+        _G.AdjustAIWarBehavior(faction) -- call function in gc_scripts.lua
+    end
 
     -- Conditions for peace proposal
     if strength_ratio < 0.5 or lost_cities or recent_defeats or war_weariness > 50 then
@@ -403,6 +408,7 @@ function isFactionWeakened(faction_id)
 
     return false
 end
+
 
 function getEnemyStrength(faction)
     local total_strength = 0

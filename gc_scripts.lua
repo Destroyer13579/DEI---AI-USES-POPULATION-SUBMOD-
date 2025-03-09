@@ -20,6 +20,8 @@ _G.main_env = getfenv(1);
 -- Load libraries
 scripting = require "lua_scripts.EpisodicScripting";  
 require "DeI_utility_functions";
+require("lua_scripts.politsys") -- ensure gc_scripts can call 
+
 
 -- Variables
 AICarthageRomeEscalationTriggered = false;
@@ -76,32 +78,39 @@ function AdjustAIWarBehavior(faction)
     local current_manpower = GetFactionManpower(faction_name)
     local avg_manpower = GetAverageManpower(faction_name)
     local active_wars = faction:at_war_list():num_items()
-    
+
     if avg_manpower == 0 then return end  -- Avoid division by zero
-    
+
     local manpower_ratio = current_manpower / avg_manpower
-    
+    local weakened = false
+
+    -- Check if the faction is weakened (calls politsys.lua)
+    if _G.isFactionWeakened then  
+        weakened = _G.isFactionWeakened(faction_name)
+    end
+
     if manpower_ratio > 1.2 then
         -- AI has excess manpower, more likely to go to war
         if active_wars < 2 then  -- Don't overextend
             CheckForStrikeWar(faction)
             CheckForBigWar(faction)
         end
-    elseif manpower_ratio < 0.8 then
+    elseif manpower_ratio < 0.8 or weakened then
         -- AI has less manpower than average, avoid wars and prioritize recovery
         AdjustAIBuildingPriorities(faction)
-        
+
         -- If at war with multiple factions and losing, seek peace
-        if active_wars >= 2 then
+        if active_wars >= 2 and (manpower_ratio < 0.6 or weakened) then  
             for i = 0, faction:at_war_list():num_items() - 1 do
                 local enemy = faction:at_war_list():item_at(i)
-                if enemy:is_human() == false then  -- Avoid forcing peace with players
+                if enemy:is_human() == false and faction:losing_war() then  -- AI must be clearly losing
                     scripting.game_interface:force_make_peace(faction:name(), enemy:name())
                 end
             end
         end
     end
 end
+
 
 --===================================
 -- AI Population & Recruitment Balancing --
