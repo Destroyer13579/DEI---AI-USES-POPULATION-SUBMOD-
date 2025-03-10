@@ -53,21 +53,26 @@ AI sallies out less frequently (only if they have an actual chance to win)
 AI sieges are more calculated (less random raiding, smarter hold tactics)
 AI prioritizes reinforcements for border settlements
 Wars are more strategic, less reckless (factions won’t suicide into unwinnable wars)
+
 ✅ New Punic War System:
 
 Rome & Carthage gradually drift toward war (higher probability over time)
 If Sicily, Sardinia, or Corsica is taken, war triggers immediately
 Guaranteed war by turn 50 if neither faction has already started it
+
 ✅ Smarter Army Behavior:
 
 AI stops retreating unnecessarily (only backs off if outnumbered 2:1)
 AI reinforces border settlements instead of leaving them empty
 AI targets weak enemy border settlements more aggressively
+
 ✅ Economy & Recruitment Fixes:
 
 AI respects manpower/population limits when recruiting
 AI builds economy before spamming armies
 AI handles public order better (fewer self-inflicted rebellions)
+
+
 📥 Installation Instructions
 1️⃣ Download & Install
 Download the mod .pack file from the GitHub Releases Page.
