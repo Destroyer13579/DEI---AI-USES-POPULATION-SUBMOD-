@@ -18,7 +18,7 @@ The result is a campaign that’s more difficult and more believable: the AI can
 
 ## **Installation**
 
-- Place DEI_AI_Pop_MOD_0_3_0.pack into:
+- Place DEI_AI_Pop_MOD_0_3_0_PRE.pack into:
 
 ...\Steam\steamapps\common\Total War Rome II\data\
 
