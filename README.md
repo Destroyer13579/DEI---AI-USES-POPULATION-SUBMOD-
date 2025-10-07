@@ -1,4 +1,4 @@
-# **v0.3.0 — PRE-RELEASE** PLEASE USE THIS CURRENT PRE-RELEASE VERSION!!!
+# **DEI SubMod: AI USES POPULATION AND MORE v0.3.0 — PRE-RELEASE** 
 
  Status: Experimental, but working in testing. Save-game ready (restart preferred).
 
