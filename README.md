@@ -1,4 +1,4 @@
-# **v3.6.1 — PRE-RELEASE** PLEASE USE THIS CURRENT PRE-RELEASE VERSION!!!
+# **v0.3.0 — PRE-RELEASE** PLEASE USE THIS CURRENT PRE-RELEASE VERSION!!!
 
  Status: Experimental, but working in testing. Save-game ready (restart preferred).
 
