@@ -16,7 +16,7 @@ Rebalancing pressure through realistic constraints (recruitment affordability, r
 
 The result is a campaign that’s more difficult and more believable: the AI can still field strong forces, but it must do so within population and logistics—just like you.
 
-### **Installation**
+## **Installation**
 
 - Place DEI_AI_Pop_MOD_3_6_1.pack into:
 
@@ -28,7 +28,7 @@ The result is a campaign that’s more difficult and more believable: the AI can
 Save-game ready, **but a full game restart is preferred after enabling.**
 
 
-### **What’s new in v3.6.1**
+## **What’s new in v3.6.1**
 
 - AI “pay-or-delete” recruitment
 
