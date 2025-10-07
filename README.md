@@ -18,7 +18,7 @@ The result is a campaign that’s more difficult and more believable: the AI can
 
 ## **Installation**
 
-- Place DEI_AI_Pop_MOD_3_6_1.pack into:
+- Place DEI_AI_Pop_MOD_0_3_0.pack into:
 
 ...\Steam\steamapps\common\Total War Rome II\data\
 
@@ -28,7 +28,7 @@ The result is a campaign that’s more difficult and more believable: the AI can
 Save-game ready, **but a full game restart is preferred after enabling.**
 
 
-## **What’s new in v3.6.1**
+## **What’s new in v0.3.0**
 
 - AI “pay-or-delete” recruitment
 
@@ -107,7 +107,7 @@ cm:remove_unit_from_military_force(mf, unit_key) →
 failsafe loop unit:inflict_casualties(unit:number_of_men()) to zero the entity.
 
 
-# **Defaults in v3.6.1 PRE-RELEASE**
+# **Defaults in v0.3.0 PRE-RELEASE**
 ## assistance
 SIPHON_FROM_SAME_PROVINCE = true
 WAR_ONLY = true
