@@ -16,23 +16,6 @@ Rebalancing pressure through realistic constraints (recruitment affordability, r
 
 The result is a campaign that’s more difficult and more believable: the AI can still field strong forces, but it must do so within population and logistics—just like you.
 
-## **How the new AI population system works (simple)**
-
-- Spot new AI units: We take a snapshot at the start of an AI faction’s turn and compare at the end. Anything new is a recruit/top-up.
-
-- Charge the cost: We look up the unit’s population class and men cost, and try to pay it from that region’s pool for the same class.
-
-**If short:**
-
-- Borrow the same class from other regions in the same province (small amounts).
-
-- If the faction is at war, add a small emergency levy (never for elites) to finish the bill.
-
-- If the cost still can’t be covered: The unit is deleted.
-
-- **No class mixing**: Citizens cannot be made from freemen, etc. Humans are unaffected.
-
-- In practice: when upper-class pools are drained, elites fail to recruit; the AI fields what it can actually afford, especially during wars. In peacetime, levies are disabled.
 
 ## **What’s already changed in this pre-release**
 
@@ -55,20 +38,18 @@ Citizens/Elites are never levied. Default caps in this build:
 LEVY_MAX = { [1]=0, [2]=40, [3]=60, [4]=40 }
 WAR_ONLY = true
 
-
 ## **Fixes**
 - Fixed a long-standing issue where Rome and Carthage remained friendly for the entire campaign instead of drifting into hostility and war. They are now pushed back to war more easily like default DEI. 
 - Fixed the main folder "3.0" to "0.3.0"
+- Updated README
 
-## **Plan for next update:**
-- AI aggresion targeted-tweaks to lesson passive tendencies. (NO TABLE TUNING)
-- Population growth tweaks for AI
-- AI levy system changes 
-  
-## **Script LOGS disabled by default**
- - Script text logs are disabled in this pre-release (you can re-enable for audits).
+## **Plans for next update**
+- Adjust the passive-ness of the AI(small problem). Solution: Targeted tweaks to AI's population/levy/siphon systems to achieve aggressiveness (NO TABLE-TUNING)
+- Investigate AI growth in peace and wartime. Solution: Play a bunch and monitor how easy or hard they can survive in war. Adjust as-needed.
+- Begin investigating migration population procedures and testing ways to flesh it out. (At-war -20% migrants, at peace -+20% migrants, etc) 
 
 ## **Installation**
+
 
 - Place DEI_AI_Pop_MOD_0_3_0_PRE.pack into:
 
@@ -118,7 +99,9 @@ cm:remove_unit_from_character(char, unit_key) →
 cm:remove_unit_from_military_force(mf, unit_key) →
 failsafe loop unit:inflict_casualties(unit:number_of_men()) to zero the entity.
 
-
+## **Script LOGS disabled by default**
+ - Script text logs are disabled in this pre-release (you can re-enable for audits).
+ 
 # **Defaults in v0.3.0 PRE-RELEASE**
 ## assistance
 SIPHON_FROM_SAME_PROVINCE = true
