@@ -30,6 +30,8 @@ The result is a campaign that’s more difficult and more believable: the AI can
 
 - At AI turn end, any newly appeared unit (or large refill) must be paid from the region’s population pool for that unit’s class. If payment fails, the unit is deleted.
 
+- FOR MODDERS, provided a basic scripting log, easy to use. (just drag it into rome2/data folder and activate it like any other mod. More instructions below in the modders section) 
+
 - Gentle assist, war-only
 If the region is slightly short, the AI may (a) siphon the same class from other regions in the same province, and then (b) apply a small emergency levy only while at war.
 Citizens/Elites are never levied. Default caps in this build:
@@ -72,6 +74,9 @@ AI crutches (notably scripted Punic War armies) are being removed to keep the ex
 You may see severely drained AI population numbers after large wars. This is expected with the new rules but not fully balanced; next steps for AI population replenishment are under review.
 
 ## **FOR MODDERS!!**
+
+## A logging script mod is provided (NOT made by me)
+- There is a "basic logging script.pack" mod included. If you go into "population.lua" and switch the log activations at the top to "true", logs will be automatically made as you play in your campaign inside your main Rome 2/data folder. Then you can provide them! 
 
 ##  **Core enforcement**
 ## Listeners:
