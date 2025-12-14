@@ -40,7 +40,7 @@ the AI can still field powerful armies—but only if it has the population to su
 
 ## **What’s new in v0.4.0**
 
-- AIs now are aggressive, more logical, and attack more with the newp opulation restraints. 
+- AIs now are aggressive, more logical, and attack more with the new population restraints. 
 
 - Populations take longer to recover noww - making wars actually matter. 
 
@@ -70,6 +70,8 @@ Save-game ready, **but a full game restart is preferred after enabling.**
 ## **Known issues (pre-release)**
 
 -- None that are big enough in 0.4.0 at the moment. -- 
+
+Event messsages still popup, they do nothing. 
 
 ## **FOR MODDERS!!**
 
