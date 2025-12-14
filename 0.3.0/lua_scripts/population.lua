@@ -474,27 +474,22 @@ end
 -- ***** SET GROWTH DIVISOR ***** --
 
 function SetGrowthDivisor(campaign)
-  if population_modifier["enable_tpy_growth_division"] == true then
-      if campaign_turn_per_year[campaign] then
-          local baseDivisor = campaign_turn_per_year[campaign]
-          
-          -- Add real growth factors
-          local realModifiers = 
-              UI_public_order[1] + UI_food[1] + UI_taxation[1] + 
-              UI_Faction_Capital[1] + UI_Province_Capital[1] + UI_Culture[1] + 
-              UI_majority_religion[1] + UI_buildings[1] + UI_Under_Siege[1] + UI_technology[1]
-          
-          -- Use a weighted average to get a more accurate divisor
-          growthDivisor = baseDivisor * (1 + realModifiers / 100)
-      end
+  -- NOTE:
+  -- regionPopModTable values represent YEARLY percentage growth (e.g. 2.5 = +2.5% per year).
+  -- We keep these yearly semantics for UI/projections, and only convert to per-turn at the moment of application.
+  local tpy = 1
+  if campaign_turn_per_year and campaign and campaign_turn_per_year[campaign] then
+    tpy = campaign_turn_per_year[campaign]
+  end
+
+  -- Backwards-compatible denominator: turns_per_year * 100 converts yearly % to per-turn fraction.
+  if population_modifier and population_modifier["enable_tpy_growth_division"] == true then
+    growthDivisor = tpy * 100
+  else
+    growthDivisor = 100
   end
 end
 
-
-
--- #####---------------------------------- END #####
-
--- #####------------------------- START #####
 -- POP GROWTH FUNCTIONS  ---------------------------------------------------------------------
 
 -- POP GROWTH FUNCTIONS
@@ -948,7 +943,19 @@ function RegionPopGrowth(region)
 
       end;
       
-      regionPopTable[i] = regionPopTable[i] * (1 + regionPopModTable[i]/growthDivisor)
+      -- Apply growth: regionPopModTable[i] is YEARLY %.
+      -- Convert to per-turn by dividing by (turns_per_year * 100).
+      local _campaign = GetCampaignName()
+      SetGrowthDivisor(_campaign)
+      local _per_turn = regionPopModTable[i] / growthDivisor
+
+      -- AI wartime frontline recovery boost:
+      -- If AI is at war and enemies were present this turn in the region, allow faster recovery so stacks rebuild and push out.
+      if faction:is_human() == false and faction:at_war() and foreignArmies == true then
+        _per_turn = _per_turn * 1.35
+      end
+
+      regionPopTable[i] = regionPopTable[i] * (1 + _per_turn)
       
       LogPop("RegionPopGrowth(region)", "540", "new population: regionPopTable["..i.."]: "..tostring(regionPopTable[i]));
       
