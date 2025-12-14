@@ -46,9 +46,8 @@ WAR_ONLY = true
 - Updated README
 
 ## **Plans for next update**
-- Adjust the passive-ness of the AI(small problem). Solution: Targeted tweaks to AI's population/levy/siphon systems to achieve aggressiveness (NO TABLE-TUNING)
-- Investigate AI growth in peace and wartime. Solution: Play a bunch and monitor how easy or hard they can survive in war. Adjust as-needed.
-- Begin investigating migration population procedures and testing ways to flesh it out. (At-war -20% migrants, at peace -+20% migrants, etc) 
+
+Fixes relating to AI pop growth and UI accuracy. 
 
 ## **Installation**
 
@@ -64,14 +63,10 @@ Save-game ready, **but a full game restart is preferred after enabling.**
 
 ## **Known issues (pre-release)**
 
-## - **Occasional AI passivity**
-Some factions can be too passive under the new constraints. A targeted adjustment is in progress for a future update.
+Current bug with AI wasting manpower, fixing in next patch. 
 
-## - **Cheat removal, work-in-progress**
-AI crutches (notably scripted Punic War armies) are being removed to keep the experience “difficult, realistic, vanilla.” Side effects remain; e.g., Sicily tension notifications may trigger prematurely for Rome and Carthage.
+Another issue where AI population values only increase, and not decrease. 
 
-## - **Extreme depletion during major wars**
-You may see severely drained AI population numbers after large wars. This is expected with the new rules but not fully balanced; next steps for AI population replenishment are under review.
 
 ## **FOR MODDERS!!**
 
