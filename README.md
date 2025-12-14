@@ -1,21 +1,23 @@
-# **DEI SubMod: AI USES POPULATION AND MORE v0.3.0 — PRE-RELEASE** 
+# **DEI SubMod: AI USES POPULATION AND MORE v0.4.0 — PRE-RELEASE** 
 
  Status: Experimental, but working in testing. Save-game ready (restart preferred).
 
 ### **What this mod does**
 
-This pre-release makes the AI follow the same population constraints as the player, among other changes. When an AI faction recruits, the unit must be “paid for” out of the correct population class in the region where that army currently stands. If the region can’t cover the cost (even after a small, wartime-only assist), the unit is removed. No magic troops.
+This submod enforces full population-based constraints on the AI, placing it under the same demographic, recruitment, and recovery rules as the player.
 
-In parallel, this build continues a broader effort to strip AI crutches while keeping difficulty:
+When an AI faction recruits or replenishes units, the manpower must be paid from the correct population class in the region where the army is located. If the population cannot cover the cost—even after limited, war-only assistance—the unit is removed. No free troops. No magic replenishment.
 
-Removing or dialing back AI cheats/bonuses that bypass population, economy, or movement.
+Alongside this, the mod continues a broader effort to remove AI crutches while maintaining difficulty:
 
-Phasing out certain scripted armies (e.g., legacy Punic War stacks) so wars emerge from a dynamic world, not hard scripts.
+Removing or dialing back AI cheats that bypass population, economy, or logistics.
 
-Rebalancing pressure through realistic constraints (recruitment affordability, recovery time, class exhaustion) rather than hidden buffs.
+Phasing out legacy scripted armies (e.g., Punic War stacks) so wars emerge dynamically.
 
-The result is a campaign that’s more difficult and more believable: the AI can still field strong forces, but it must do so within population and logistics—just like you.
+Rebalancing challenge through real constraints (manpower exhaustion, recovery time, class depletion) rather than hidden buffs.
 
+The result is a campaign that is harder, more believable, and more dynamic:
+the AI can still field powerful armies—but only if it has the population to sustain them.
 
 ## **What’s already changed in this pre-release**
 
@@ -23,36 +25,44 @@ The result is a campaign that’s more difficult and more believable: the AI can
 
 - AIs are now constrained to population limits, same as the player: every new AI unit must pay its men from the correct class in the current region; if it still comes up short after a small, war-only assist, the unit is removed.
 
+- AI recruitment and replenishment are fully constrained by population.
 
-## **What’s new in v0.3.0**
+- Every new AI unit must pay its manpower cost from the correct class.
 
-- AI “pay-or-delete” recruitment
+- Units that cannot be paid for are automatically removed.
 
-- At AI turn end, any newly appeared unit (or large refill) must be paid from the region’s population pool for that unit’s class. If payment fails, the unit is deleted.
+- Population losses from recruitment, replenishment, and war now matter long-term.
 
-- FOR MODDERS, provided a basic scripting log, easy to use. (just drag it into rome2/data folder and activate it like any other mod. More instructions below in the modders section) 
+- Major and minor factions behave differently based on demographic strength.
 
-- Gentle assist, war-only
-If the region is slightly short, the AI may (a) siphon the same class from other regions in the same province, and then (b) apply a small emergency levy only while at war.
-Citizens/Elites are never levied. Default caps in this build:
+- Campaigns naturally develop wars of attrition instead of endless stack spam.
 
--- 1..4 = citizen, freemen, lower, foreigners
-LEVY_MAX = { [1]=0, [2]=40, [3]=60, [4]=40 }
-WAR_ONLY = true
+
+## **What’s new in v0.4.0**
+
+- AIs now are aggressive,and attack more with the new population restraints. 
+
+- Populations take longer to recover noww - making wars actually matter. 
+
 
 ## **Fixes**
-- Fixed a long-standing issue where Rome and Carthage remained friendly for the entire campaign instead of drifting into hostility and war. They are now pushed back to war more easily like default DEI. 
-- Fixed the main folder "3.0" to "0.3.0"
-- Updated README
+
+- Fixed idle AIs (ALL FACTIONS) 
+- Fixed AI aggression
+- Fixed population UI spirling inaccurate data 
 
 ## **Plans for next update**
 
+<<<<<<< HEAD
 Fixes relating to AI pop growth and UI accuracy. 
+=======
+- Fine tune AI aggression and recruitment logic. 
+>>>>>>> 803bdcf1abcf3ed4b551dd221e7c67c6a110b3d7
 
 ## **Installation**
 
 
-- Place DEI_AI_Pop_MOD_0_3_0_PRE.pack into:
+- Place DEI_AI_Pop_MOD_0_4_0_PRE.pack into:
 
 ...\Steam\steamapps\common\Total War Rome II\data\
 
@@ -63,10 +73,16 @@ Save-game ready, **but a full game restart is preferred after enabling.**
 
 ## **Known issues (pre-release)**
 
+<<<<<<< HEAD
 Current bug with AI wasting manpower, fixing in next patch. 
 
 Another issue where AI population values only increase, and not decrease. 
 
+=======
+-- None that are big enough in 0.4.0 at the moment. -- 
+
+Event messsages still popup, they do nothing. 
+>>>>>>> 803bdcf1abcf3ed4b551dd221e7c67c6a110b3d7
 
 ## **FOR MODDERS!!**
 
@@ -117,12 +133,9 @@ isLogPopAllowed = false
 
 ## Compatibility & scope
 
-- No changes to UI projections, growth math, or divisors.
-
 - No global resets of population tables.
 
 - AI-only recruitment enforcement; human recruitment unchanged.
 
 - Save-game compatible (restart preferred after enabling).
 
-**If you need a variant with different levy caps, province reserve floors, or per-turn levy limits, open an issue with your preferred values for a follow-up build.**
