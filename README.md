@@ -40,7 +40,7 @@ the AI can still field powerful armies—but only if it has the population to su
 
 ## **What’s new in v0.4.0**
 
-- AIs now are aggressive, more logical, and attack more with the new population restraints. 
+- AIs now are aggressive,and attack more with the new population restraints. 
 
 - Populations take longer to recover noww - making wars actually matter. 
 
