@@ -53,11 +53,10 @@ the AI can still field powerful armies—but only if it has the population to su
 
 ## **Plans for next update**
 
-<<<<<<< HEAD
 Fixes relating to AI pop growth and UI accuracy. 
-=======
+
 - Fine tune AI aggression and recruitment logic. 
->>>>>>> 803bdcf1abcf3ed4b551dd221e7c67c6a110b3d7
+
 
 ## **Installation**
 
