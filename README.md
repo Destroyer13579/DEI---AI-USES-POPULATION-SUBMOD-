@@ -38,30 +38,83 @@ the AI can still field powerful armies—but only if it has the population to su
 - Campaigns naturally develop wars of attrition instead of endless stack spam.
 
 
-## **What’s new in v0.4.0**
+## **What’s new in v0.4.1**
 
-- AIs now are aggressive,and attack more with the new population restraints. 
+## RELEASE — v0.4.1
 
-- Populations take longer to recover noww - making wars actually matter. 
+Divide et Impera - AI Uses Population Overhaul – v0.4.1
+Core Fixes
+
+- Fixed AI region population not increasing despite positive growth
+
+- Restored backend population mutation to match UI projections
+
+- Fixed desync between growth calculation and actual population tables
+
+- Prevented silent population stagnation on AI factions
+
+## AI Population Behavior
+
+AI recruitment now:
+
+- Correctly checks population availability
+
+- Deducts population on successful recruitment
+
+- Blocks recruitment when insufficient population exists
+
+- Logs both success and failure states clearly
+
+## AI class promotion:
+
+- Safely redistributes surplus lower-class population upward
+
+- Executes after growth, not before
+
+- Prevents elite-class starvation without creating inflation
+
+## UI & Transparency
+
+- Population Growth panel now reflects real backend data
+
+- Per-class growth numbers match applied population changes
+
+- Total population (white number) updates correctly each turn
+
+- Removed misleading “projection-only” behavior
+
+## Stability & Saves
+
+Fixed zeroing (dy) regression
+
+
+## Technical Cleanup
+
+Restored 0.3.0’s working growth application logic
+
+Integrated it cleanly into 0.4.0’s expanded systems
+
+Preserved all 0.4.0 features (promotion, AI rules, UI math)
+
+Removed conflicting reset paths and shadow tables
 
 
 ## **Fixes**
 
-- Fixed idle AIs (ALL FACTIONS) 
-- Fixed AI aggression
-- Fixed population UI spirling inaccurate data 
+- Fixed zeroing (dy) regression
 
 ## **Plans for next update**
 
-Fixes relating to AI pop growth and UI accuracy. 
+COntinue to test and balance AI with current feature set. 
 
-- Fine tune AI aggression and recruitment logic. 
-
+=======
+- More fine tunign to AI aggression with current mechanics
+>>>>>>> Stashed changes
 
 ## **Installation**
 
 
-- Place DEI_AI_Pop_MOD_0_4_0_PRE.pack into:
+- Place DEI_AI_Population_MOD_0_4_1_PRE.pack into:
 
 ...\Steam\steamapps\common\Total War Rome II\data\
 
@@ -72,16 +125,7 @@ Save-game ready, **but a full game restart is preferred after enabling.**
 
 ## **Known issues (pre-release)**
 
-<<<<<<< HEAD
-Current bug with AI wasting manpower, fixing in next patch. 
-
-Another issue where AI population values only increase, and not decrease. 
-
-=======
--- None that are big enough in 0.4.0 at the moment. -- 
-
-Event messsages still popup, they do nothing. 
->>>>>>> 803bdcf1abcf3ed4b551dd221e7c67c6a110b3d7
+- AI can be less aggressiveo n easy mode, recommend normal and above 
 
 ## **FOR MODDERS!!**
 
@@ -101,11 +145,6 @@ Event messsages still popup, they do nothing.
 
 3. If short, call the assist:
 
-## Siphon: same class, same province, small amounts (respecting donor safety if configured).
-
-Levy: only if WAR_ONLY and the faction is at war; add up to LEVY_MAX[class] to bridge the remainder (Citizens/Elites have cap 0).
-
-4. If coverage succeeds, deduct full cost from the target region and keep the unit; otherwise, remove it.
 
 ## **Blocker**
 
@@ -117,11 +156,6 @@ failsafe loop unit:inflict_casualties(unit:number_of_men()) to zero the entity.
 ## **Script LOGS disabled by default**
  - Script text logs are disabled in this pre-release (you can re-enable for audits).
  
-# **Defaults in v0.3.0 PRE-RELEASE**
-## assistance
-SIPHON_FROM_SAME_PROVINCE = true
-WAR_ONLY = true
-LEVY_MAX = { [1]=0, [2]=40, [3]=60, [4]=40 }
 
 ## logging (off in this build)
 isLogAllowed = false

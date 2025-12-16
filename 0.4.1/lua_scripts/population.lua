@@ -70,8 +70,8 @@ local region_desire = "none"
 
 -- BOOLEANS
 triggerload = "nil";
-isLogAllowed = false;
-isLogPopAllowed = false;
+isLogAllowed = true;
+isLogPopAllowed = true;
 
 
 -- ***** SET TICK TOCK ***** --
@@ -474,21 +474,33 @@ end
 -- ***** SET GROWTH DIVISOR ***** --
 
 function SetGrowthDivisor(campaign)
-  -- NOTE:
-  -- regionPopModTable values represent YEARLY percentage growth (e.g. 2.5 = +2.5% per year).
-  -- We keep these yearly semantics for UI/projections, and only convert to per-turn at the moment of application.
+  -- regionPopModTable values are stored as DECIMAL yearly rates (e.g. 0.0375 = +3.75% per year).
+  -- We convert to per-turn by dividing by turns-per-year (and optionally a small weighted factor),
+  -- matching the working 0.3.0 semantics.
   local tpy = 1
   if campaign_turn_per_year and campaign and campaign_turn_per_year[campaign] then
     tpy = campaign_turn_per_year[campaign]
   end
 
-  -- Backwards-compatible denominator: turns_per_year * 100 converts yearly % to per-turn fraction.
+  -- Default: just divide yearly rates by turns-per-year.
+  growthDivisor = tpy
+
+  -- Optional weighted adjustment (0.3.0 behavior). Only if the UI_* tables exist.
+  -- These UI_* values are percent-point modifiers (e.g. +1.5), so we scale divisor by (1 + sum/100).
   if population_modifier and population_modifier["enable_tpy_growth_division"] == true then
-    growthDivisor = tpy * 100
-  else
-    growthDivisor = 100
+    if UI_public_order and UI_food and UI_taxation and UI_Faction_Capital and UI_Province_Capital
+       and UI_Culture and UI_majority_religion and UI_buildings and UI_Under_Siege and UI_technology then
+      local realModifiers =
+          (UI_public_order[1] or 0) + (UI_food[1] or 0) + (UI_taxation[1] or 0) +
+          (UI_Faction_Capital[1] or 0) + (UI_Province_Capital[1] or 0) + (UI_Culture[1] or 0) +
+          (UI_majority_religion[1] or 0) + (UI_buildings[1] or 0) + (UI_Under_Siege[1] or 0) + (UI_technology[1] or 0)
+
+      growthDivisor = tpy * (1 + realModifiers / 100)
+    end
   end
 end
+
+
 
 -- POP GROWTH FUNCTIONS  ---------------------------------------------------------------------
 
@@ -995,6 +1007,15 @@ function RegionPopGrowth(region)
     --2) apply new pop figures to region pop list. Always use this function to update as it checks entries for errors
     
     SetRegionPop(regionName, regionPopTable[1], regionPopTable[2], regionPopTable[3], regionPopTable[4]);
+
+  -- Keep UI shadow in sync for ALL regions (AI + human).
+  -- Several UI elements (including the settlement "white total") read from UIPopulation.
+  if UIPopulation and UIPopulation[regionName] then
+    UIPopulation[regionName][1] = region_table[regionName][1]
+    UIPopulation[regionName][2] = region_table[regionName][2]
+    UIPopulation[regionName][3] = region_table[regionName][3]
+    UIPopulation[regionName][4] = region_table[regionName][4]
+  end
     
     LogPop("RegionPopGrowth(region)", "560", "completed growth: " .. regionName);
   
@@ -1868,6 +1889,7 @@ local function OnWorldCreatedPop(context)
 
   -- get campaign name and save in global variable
   SetRegionTable()
+  resetUIPopulation() -- sync UI shadow table for all regions on new campaign
   createNewLog("Hello")
   PopLog("Pop script world created"  , "OnWorldCreatedPop()") 
 
@@ -9050,6 +9072,7 @@ function AIRecruitmentHandler(character, unitKey)
   local factionName = character:faction():name()
   local regionName = character:region():name()
   
+  PopLog("AIRecruitmentHandler: checking "..tostring(unitKey).." in "..tostring(regionName).." ("..tostring(factionName)..")", "AIRecruitmentHandler()")
   -- Get unit size from population table, default to 120 if not found
   local unitSize = unit_to_pop_table[unitKey] and unit_to_pop_table[unitKey][2] or 120
 
@@ -9061,13 +9084,83 @@ function AIRecruitmentHandler(character, unitKey)
 
   -- Prevent AI recruitment if not enough population
   if currentPop < unitSize then
-      PopLog("AI attempted to recruit " .. unitKey .. " but lacks enough population! Recruitment blocked.")
+      PopLog("AI attempted to recruit "..tostring(unitKey).." but lacks enough population in "..tostring(regionName).." (class "..tostring(popClass)..", need "..tostring(unitSize)..", have "..tostring(currentPop)..")! Recruitment blocked.", "AIRecruitmentHandler()")
       return -- Block recruitment
   end
 
   -- Otherwise, proceed with recruitment and deduct population
   PopLog("AI recruited " .. unitKey .. " deducting " .. unitSize .. " population from " .. regionName)
   RemovePop(unitKey, unitSize, regionName, nil, factionName)
+end
+
+
+-- ***** AI CLASS PROMOTION (ANTI-STALL) ***** --
+-- Goal:
+--   If an AI-owned region has a large surplus of class 3/4 population, slowly promote a
+--   controlled amount into class 1/2 each turn so the AI doesn't stall out on recruitment.
+--
+-- Tuning knobs (safe defaults):
+--   * Threshold: only promote surplus above this per class (prevents stripping a region)
+--   * Rate: % of total surplus (3+4) to promote per turn
+--   * Min/Max: clamp to keep results stable and predictable
+
+local AI_PROMOTE_THRESHOLD = 5000
+local AI_PROMOTE_RATE      = 0.10   -- 10% of surplus per turn
+local AI_PROMOTE_MIN       = 200    -- at least a couple hundred, when surplus exists
+local AI_PROMOTE_MAX       = 450    -- cap to avoid huge swings in rich regions
+
+local function AIClassPromotion(regionName, factionName)
+  if not regionName or not region_table or not region_table[regionName] then
+    return
+  end
+
+  local c1 = region_table[regionName][1] or 0
+  local c2 = region_table[regionName][2] or 0
+  local c3 = region_table[regionName][3] or 0
+  local c4 = region_table[regionName][4] or 0
+
+  local surplus3 = math.max(0, c3 - AI_PROMOTE_THRESHOLD)
+  local surplus4 = math.max(0, c4 - AI_PROMOTE_THRESHOLD)
+  local surplus  = surplus3 + surplus4
+
+  if surplus <= 0 then
+    return
+  end
+
+  local promote = math.floor(surplus * AI_PROMOTE_RATE)
+  if promote < AI_PROMOTE_MIN then promote = AI_PROMOTE_MIN end
+  if promote > AI_PROMOTE_MAX then promote = AI_PROMOTE_MAX end
+  if promote > surplus then promote = surplus end
+
+  -- Split removal between class 3 and 4 proportional to their surplus
+  local take3 = 0
+  if surplus3 > 0 then
+    take3 = math.floor(promote * (surplus3 / surplus))
+  end
+  local take4 = promote - take3
+
+  -- Split promotion between class 1 and 2 (keeps both stocked)
+  local add1 = math.floor(promote / 2)
+  local add2 = promote - add1
+
+  region_table[regionName][1] = ControlPopValue(c1 + add1)
+  region_table[regionName][2] = ControlPopValue(c2 + add2)
+  region_table[regionName][3] = ControlPopValue(c3 - take3)
+  region_table[regionName][4] = ControlPopValue(c4 - take4)
+
+  -- Keep UI shadow in sync when it exists (some UI code reads UIPopulation directly)
+  if UIPopulation and UIPopulation[regionName] then
+    UIPopulation[regionName][1] = region_table[regionName][1]
+    UIPopulation[regionName][2] = region_table[regionName][2]
+    UIPopulation[regionName][3] = region_table[regionName][3]
+    UIPopulation[regionName][4] = region_table[regionName][4]
+  end
+
+  PopLog(
+    "AIClassPromotion: " .. tostring(factionName) .. " | " .. tostring(regionName)
+    .. " | +" .. add1 .. " c1, +" .. add2 .. " c2"
+    .. " | -" .. take3 .. " c3, -" .. take4 .. " c4"
+  )
 end
 
 
@@ -9085,6 +9178,13 @@ function AIRemovePop(character)
 
   local regionName = character:region():name()
 
+  -- First time we see this CQI, we don't have a baseline list yet.
+  -- Build it and exit; next turn we can accurately detect newly recruited units.
+  if not AI_recruitment_table[tostring(cqi)] then
+    AIAddUnitTable(character)
+    return
+  end
+
   for i = 0, force:unit_list():num_items() - 1 do
     local unit = force:unit_list():item_at(i)
     local unit_key = unit:unit_key()
@@ -9096,7 +9196,7 @@ function AIRemovePop(character)
     local key = new_units[i] 
     
     for x = 0, character:military_force():unit_list():num_items() - 1 do
-      if key == AI_recruitment_table[tostring(cqi)][x] then
+      if AI_recruitment_table[tostring(cqi)] and key == AI_recruitment_table[tostring(cqi)][x] then
         new_units[i] = nil
         AI_recruitment_table[tostring(cqi)][x] = nil 
         break
@@ -9107,7 +9207,8 @@ function AIRemovePop(character)
   for i, value in pairs(new_units) do   
     if value ~= nil then
       local unit_key = value
-      RecListenerRemovePop(regionName, unit_key, factionName)
+      PopLog("AI detected new unit (diff): "..tostring(unit_key).." in "..tostring(regionName).." for "..tostring(factionName), "AIRemovePop()")
+      AIRecruitmentHandler(character, unit_key)
     end
   end
 end
@@ -9134,6 +9235,8 @@ end
 -- ***** AI FACTION TURN START ***** --
 
 local function AIFactionTurnStart(context)
+
+  PopLog('AI FactionTurnStart processing '..tostring(context:faction():name()), 'AIFactionTurnStart()')
   local faction = context:faction()
   
   if not faction:is_human() then -- AI faction handling
@@ -9144,18 +9247,23 @@ local function AIFactionTurnStart(context)
       and curr_char:has_military_force() 
       and curr_char:has_region() then
       
-        -- Ensure AI unit recruitment also deducts population
-        local army = curr_char:military_force()
-        local unit_list = army:unit_list()
-
-        for i = 0, unit_list:num_items() - 1 do
-          local unit = unit_list:item_at(i)
-          local unitKey = unit:unit_key()
-          AIRecruitmentHandler(curr_char, unitKey)
-        end
-        
+        -- IMPORTANT:
+        --   Do NOT iterate all units and deduct pop each turn (that causes the massive over-drain
+        --   you're seeing in class 1/2). We only remove pop for *newly recruited* units by diffing
+        --   against AI_recruitment_table.
         AIRemovePop(curr_char)
+
+        -- Refresh the snapshot after removals, so next turn diff is correct.
+        AIAddUnitTable(curr_char)
       end
+    end
+
+    -- After recruitment deductions, promote some surplus class 3/4 into class 1/2
+    -- for each AI-owned region (runs once per region per faction turn).
+    local region_list = faction:region_list()
+    for r = 0, region_list:num_items() - 1 do
+      local regionName = region_list:item_at(r):name()
+      AIClassPromotion(regionName, faction:name())
     end
   end
 end
